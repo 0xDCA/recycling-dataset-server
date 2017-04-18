@@ -1,7 +1,13 @@
-.picture-container {
-  display: flex;
+body {
+  padding: 0px 30px 30px 30px;
+  width: 100%;
 }
 
-.picture-item {
+.device-image {
+  object-fit: contain;
+  object-position: center;
+  width: 300px;
+  height: 300px;
+}
 
 }

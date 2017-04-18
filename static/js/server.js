@@ -1,4 +1,4 @@
-angular.module('dashboardApp', ['btford.socket-io'])
+angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
   .factory('socket', function (socketFactory) {
     var result = socketFactory({
       ioSocket: io.connect('http://' + document.domain + ':' + location.port)

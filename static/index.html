@@ -1,28 +1,49 @@
 <!DOCTYPE html>
-<html ng-app="dashboardApp">
+<html ng-app="dashboardApp" ng-cloak>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dataset server</title>
+
+  <link rel="stylesheet" type="text/css" href="static/css/angular-material.min.css">
   <link rel="stylesheet" type="text/css" href="static/css/server.css">
 </head>
-<body ng-controller="DashboardController as dashboardController">
-  <h2>Connected devices</h2>
+<body ng-controller="DashboardController as dashboardController" layout="column">
+  <md-content layour="column">
+    <h1 class="md-headline">Recycling Dataset Dashboard</h1>
 
-  <ul>
-    <li ng-repeat="device in dashboardController.devices">{{device.name}}</li>
-  </ul>
+    <md-list>
+      <md-subheader class="md-no-sticky">Connected devices</md-subheader>
+      <md-list-item class="md-2-line contact-item" ng-repeat="device in dashboardController.devices">
+        <div class="md-list-item-text compact">
+          <h3>{{device.name}}</h3>
+          <p>{{device.client_id}}</p>
+        </div>
+      </md-list-item>
+    </md-list>
 
-  <button type="button" ng-click="dashboardController.requestPictures()">Take photos</button>
+    <md-button class="md-raised md-primary" ng-click="dashboardController.requestPictures()">
+      Take photos
+    </md-button>
 
-  <div class="picture-container">
-    <div ng-repeat="device in dashboardController.lastRequestDevices" class="picture-item">
-      <h5>{{device.name}}</h5>
+    <div layout="row" layout-wrap layout-align="center center">
+      <md-card flex="auto" ng-repeat="device in dashboardController.lastRequestDevices" layout-align="start center">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline">{{device.name}}</span>
+          </md-card-title-text>
+        </md-card-title>
 
-      <img ng-src="{{dashboardController.lastPhotosUrls[device.client_id]}}">
+        <img ng-src="{{dashboardController.lastPhotosUrls[device.client_id]}}" class="md-card-image device-image">
+
+      </md-card>
     </div>
-  </div>
+  </md-content>
 
   <script type="text/javascript" src="static/js/socket.io.js"></script>
   <script type="text/javascript" src="static/js/angular.js"></script>
+  <script type="text/javascript" src="static/js/angular-animate.js"></script>
+  <script type="text/javascript" src="static/js/angular-aria.js"></script>
+  <script type="text/javascript" src="static/js/angular-material.min.js"></script>
   <script type="text/javascript" src="static/js/socket.js"></script>
   <script type="text/javascript" src="static/js/server.js"></script>
 </body>
