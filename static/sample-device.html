@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dataset server</title>
+</head>
+<body>
+  <script type="text/javascript" src="static/js/socket.io.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    function toDataUrl(url, callback) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onload = function() {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          callback(reader.result);
+        }
+
+        reader.readAsDataURL(xhr.response);
+      };
+
+      xhr.open('GET', url);
+      xhr.responseType = 'blob';
+      xhr.send();
+    }
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.emit('register-device', {client_name: 'Sample client'});
+    });
+
+    socket.on('picture-requested', function(data) {
+      toDataUrl('static/sample_image.jpg', function(base64Image) {
+        var prefix = "data:image/jpeg;base64,";
+        if (!base64Image.startsWith(prefix)) {
+          throw new Error("Invalid prefix: " + base64Image);
+        }
+
+        socket.emit('picture-available', {
+          request_id: data['request_id'],
+          image: base64Image.substring(prefix.length)
+        });
+      });
+    });
+</script>
+</body>
+</html>

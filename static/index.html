@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html ng-app="dashboardApp">
+<head>
+  <title>Dataset server</title>
+  <link rel="stylesheet" type="text/css" href="static/css/server.css">
+</head>
+<body ng-controller="DashboardController as dashboardController">
+  <h2>Connected devices</h2>
+
+  <ul>
+    <li ng-repeat="device in dashboardController.devices">{{device.name}}</li>
+  </ul>
+
+  <button type="button" ng-click="dashboardController.requestPictures()">Take photos</button>
+
+  <div class="picture-container">
+    <div ng-repeat="device in dashboardController.lastRequestDevices" class="picture-item">
+      <h5>{{device.name}}</h5>
+
+      <img ng-src="{{dashboardController.lastPhotosUrls[device.client_id]}}">
+    </div>
+  </div>
+
+  <script type="text/javascript" src="static/js/socket.io.js"></script>
+  <script type="text/javascript" src="static/js/angular.js"></script>
+  <script type="text/javascript" src="static/js/socket.js"></script>
+  <script type="text/javascript" src="static/js/server.js"></script>
+</body>
+</html>
