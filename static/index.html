@@ -43,6 +43,12 @@
             Take photo
           </md-button>
           <md-button
+            ng-click="dashboardController.showFullSizeImage($event, device,
+              dashboardController.lastPhotosUrls[clientId])"
+            ng-disabled="dashboardController.lastPhotosUrls[clientId] == null">
+            Zoom
+          </md-button>
+          <md-button
             ng-click="dashboardController.removeDevice(clientId)"
             ng-disabled="device.connected">
             <md-icon>remove_circle</md-icon>

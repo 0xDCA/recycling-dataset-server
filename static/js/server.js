@@ -8,7 +8,7 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
 
     return result;
   })
-  .controller('DashboardController', function(socket, $scope) {
+  .controller('DashboardController', function(socket, $scope, $mdDialog) {
     var dashboardController = this;
     dashboardController.devices = {};
     dashboardController.lastPhotosUrls = {};
@@ -48,6 +48,35 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
     dashboardController.removeDevice = function(clientId) {
       delete dashboardController.devices[clientId];
     };
+
+    dashboardController.showFullSizeImage = function($event, device, image_url) {
+      if (image_url == null) {
+        return;
+      }
+
+      function DialogController($scope, $mdDialog, device, image_url) {
+        $scope.data = {
+          zoom: 100.0
+        };
+
+        $scope.device = device;
+        $scope.image_url = image_url;
+
+        $scope.closeDialog = function() {
+          $mdDialog.hide();
+        };
+      }
+
+      var parentElement = angular.element(document.body);
+      $mdDialog.show({
+       parent: parentElement,
+       targetEvent: $event,
+       templateUrl: 'static/full_size_image_dialog.html',
+       locals: {
+         device: device,
+         image_url: image_url
+       },
+       controller: DialogController
       });
     };
 

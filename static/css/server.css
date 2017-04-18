@@ -10,6 +10,15 @@ body {
   height: 300px;
 }
 
+.full-size-image-container {
+  overflow: scroll;
+  height: 400px;
+  width: 100%;
+}
+
+.full-size-image-container img {
+  max-width: none;
+}
 
 .device-disconnected {
   text-decoration: line-through;
