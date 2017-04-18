@@ -10,23 +10,55 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
   })
   .controller('DashboardController', function(socket, $scope) {
     var dashboardController = this;
-    dashboardController.devices = [];
+    dashboardController.devices = {};
     dashboardController.lastPhotosUrls = {};
-    dashboardController.lastRequestDevices = [];
 
     var lastRequestId = null;
 
+    dashboardController.hasDevices = function() {
+      return !angular.equals({}, dashboardController.devices);
+    };
+
     dashboardController.requestPictures = function() {
-      socket.emit('request-picture', '', function(requestId) {
+      socket.emit('request-picture', {}, function(requestId) {
         lastRequestId = requestId;
         dashboardController.lastPhotosUrls = {};
-        dashboardController.lastRequestDevices = angular.copy(dashboardController.devices);
+      });
+    };
+
+    dashboardController.requestPicture = function(client_id) {
+      socket.emit('request-picture', {
+        'client_id': client_id,
+        'request_id': lastRequestId
+      }, function(requestId) {
+        if (lastRequestId != requestId) {
+          lastRequestId = requestId;
+          dashboardController.lastPhotosUrls = {};
+        }
+      });
+    };
+
+    dashboardController.removeDevice = function(clientId) {
+      delete dashboardController.devices[clientId];
+    };
       });
     };
 
     function updateDevices() {
       socket.emit('get-devices', '', function (devices) {
-        dashboardController.devices = devices;
+        var localDevices = {};
+
+        for (var i = 0; i < devices.length; ++i) {
+          var device = devices[i];
+
+          localDevices[device.client_id] = {
+            client_id: device.client_id,
+            name: device.name,
+            connected: true
+          };
+        }
+
+        dashboardController.devices = localDevices;
       });
     }
 
@@ -42,11 +74,15 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
     });
 
     socket.on('device-registered', function(device) {
-      dashboardController.devices.push(device);
+      dashboardController.devices[device.client_id] = {
+        client_id: device.client_id,
+        name: device.name,
+        connected: true
+      };
     });
 
     socket.on('device-disconnected', function(device) {
-      updateDevices();
+      dashboardController.devices[device.client_id].connected = false;
     });
 
     socket.on('picture-available', function(data) {

@@ -74,12 +74,18 @@ def on_client_disconnect():
         }, room=DASHBOARDS_ROOM)
 
 @socketio.on('request-picture')
-def on_request_picture(_):
-    request_id = str(uuid.uuid4())
+def on_request_picture(data):
+    request_id = data.get('request_id', None)
+    if request_id is None:
+         request_id = str(uuid.uuid4())
+
+    room = data.get('client_id', None)
+    if room is None:
+        room = DEVICES_ROOM
 
     socketio.emit('picture-requested', {
         "request_id": request_id
-    }, room=DEVICES_ROOM)
+    }, room=room)
 
     return request_id
 

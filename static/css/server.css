@@ -10,4 +10,8 @@ body {
   height: 300px;
 }
 
+
+.device-disconnected {
+  text-decoration: line-through;
+  color: rgba(0,0,0,0.38);
 }

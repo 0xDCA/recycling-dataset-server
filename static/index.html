@@ -12,30 +12,39 @@
   <md-content layour="column">
     <h1 class="md-headline">Recycling Dataset Dashboard</h1>
 
-    <md-list>
-      <md-subheader class="md-no-sticky">Connected devices</md-subheader>
-      <md-list-item class="md-2-line contact-item" ng-repeat="device in dashboardController.devices">
-        <div class="md-list-item-text compact">
-          <h3>{{device.name}}</h3>
-          <p>{{device.client_id}}</p>
-        </div>
-      </md-list-item>
-    </md-list>
-
-    <md-button class="md-raised md-primary" ng-click="dashboardController.requestPictures()">
-      Take photos
-    </md-button>
+    <div layout="row" layout-align="center center">
+      <md-button class="md-raised md-primary" ng-click="dashboardController.requestPictures()">
+        Take a photo on all devices
+      </md-button>
+    </div>
 
     <div layout="row" layout-wrap layout-align="center center">
-      <md-card flex="auto" ng-repeat="device in dashboardController.lastRequestDevices" layout-align="start center">
+      <p ng-if="!dashboardController.hasDevices()">No devices yet</p> 
+      <md-card flex="auto" ng-repeat="(clientId, device) in dashboardController.devices"
+        layout-align="start center">
         <md-card-title>
-          <md-card-title-text>
-            <span class="md-headline">{{device.name}}</span>
+          <md-card-title-text layout-align="center center">
+            <span class="md-headline" ng-class="{'device-disconnected': !device.connected}">
+              {{device.name}}
+            </span>
+            <span class="md-subhead">{{clientId}}</span>
           </md-card-title-text>
         </md-card-title>
 
-        <img ng-src="{{dashboardController.lastPhotosUrls[device.client_id]}}" class="md-card-image device-image">
+        <img ng-src="{{dashboardController.lastPhotosUrls[clientId]}}" class="md-card-image device-image">
 
+        <md-card-actions layout="row" layout-align="end center">
+          <md-button
+            ng-click="dashboardController.requestPicture(clientId)"
+            ng-disabled="!device.connected">
+            Take photo
+          </md-button>
+          <md-button
+            ng-click="dashboardController.removeDevice(clientId)"
+            ng-disabled="device.connected">
+            <md-icon>remove_circle</md-icon>
+          </md-button>
+        </md-card-actions>
       </md-card>
     </div>
   </md-content>
