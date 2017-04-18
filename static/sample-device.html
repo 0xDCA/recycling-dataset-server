@@ -35,10 +35,14 @@
           throw new Error("Invalid prefix: " + base64Image);
         }
 
-        socket.emit('picture-available', {
-          request_id: data['request_id'],
-          image: base64Image.substring(prefix.length)
-        });
+        // Random delay between 0 and 2 seconds
+        var delay = Math.random() * 2000;
+        setTimeout(function() {
+          socket.emit('picture-available', {
+            request_id: data['request_id'],
+            image: base64Image.substring(prefix.length)
+          });
+        }, delay);
       });
     });
 </script>

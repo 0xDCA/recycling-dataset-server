@@ -12,6 +12,7 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
     var dashboardController = this;
     dashboardController.devices = {};
     dashboardController.lastPhotosUrls = {};
+    dashboardController.waitingForPhoto = {};
 
     var lastRequestId = null;
 
@@ -20,15 +21,21 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
     };
 
     dashboardController.requestPictures = function() {
+      angular.forEach(dashboardController.devices, function(value, key) {
+        dashboardController.waitingForPhoto[key] = true;
+      });
+      
       socket.emit('request-picture', {}, function(requestId) {
         lastRequestId = requestId;
         dashboardController.lastPhotosUrls = {};
       });
     };
 
-    dashboardController.requestPicture = function(client_id) {
+    dashboardController.requestPicture = function(clientId) {
+      dashboardController.waitingForPhoto[clientId] = true;
+
       socket.emit('request-picture', {
-        'client_id': client_id,
+        'client_id': clientId,
         'request_id': lastRequestId
       }, function(requestId) {
         if (lastRequestId != requestId) {
@@ -88,6 +95,7 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
     socket.on('picture-available', function(data) {
       if (data['request_id'] === lastRequestId) {
         dashboardController.lastPhotosUrls[data['client_id']] = "data:image/jpeg;base64," + data['image'];
+        delete dashboardController.waitingForPhoto[data['client_id']];
       }
     });
   });

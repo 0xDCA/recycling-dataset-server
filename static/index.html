@@ -31,7 +31,10 @@
           </md-card-title-text>
         </md-card-title>
 
-        <img ng-src="{{dashboardController.lastPhotosUrls[clientId]}}" class="md-card-image device-image">
+        <md-progress-circular md-mode="indeterminate"
+          ng-if="dashboardController.waitingForPhoto[clientId]"></md-progress-circular>
+        <img ng-src="{{dashboardController.lastPhotosUrls[clientId]}}"
+          class="md-card-image device-image" ng-if="!dashboardController.waitingForPhoto[clientId]">
 
         <md-card-actions layout="row" layout-align="end center">
           <md-button
