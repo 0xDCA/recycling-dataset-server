@@ -24,7 +24,7 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
       angular.forEach(dashboardController.devices, function(value, key) {
         dashboardController.waitingForPhoto[key] = true;
       });
-      
+
       socket.emit('request-picture', {}, function(requestId) {
         lastRequestId = requestId;
         dashboardController.lastPhotosUrls = {};
@@ -123,7 +123,8 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
 
     socket.on('picture-available', function(data) {
       if (data['request_id'] === lastRequestId) {
-        dashboardController.lastPhotosUrls[data['client_id']] = "data:image/jpeg;base64," + data['image'];
+        var imageBlob = new Blob([data['image']], {type: 'image/jpeg'})
+        dashboardController.lastPhotosUrls[data['client_id']] = window.URL.createObjectURL(imageBlob);
         delete dashboardController.waitingForPhoto[data['client_id']];
       }
     });

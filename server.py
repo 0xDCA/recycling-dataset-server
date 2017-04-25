@@ -94,7 +94,7 @@ def on_picture_available(data):
     """
     data: {
         request_id: string,
-        image: base64 string
+        image: binary
     }
     """
 
@@ -110,7 +110,7 @@ def on_add_images(data):
     """
     data: {
         "images": [
-            "base64image"
+            binary
         ],
         "product": string,
         "classification": "BLUE" | "GREEN" | "GRAY",
@@ -129,7 +129,7 @@ def on_add_images(data):
             file_path = os.path.join(DATASET_IMAGES_PATH, file_name)
 
             with open(file_path, 'wb') as f:
-                f.write(base64.decodestring(image.encode()))
+                f.write(image)
 
             connection.execute("""INSERT INTO samples (filename,
                 product, classification, comments, source_device) VALUES (?, ?, ?, ?, ?)""",
