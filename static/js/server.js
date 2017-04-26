@@ -12,7 +12,13 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
     var dashboardController = this;
     dashboardController.devices = {};
     dashboardController.lastPhotosUrls = {};
+    dashboardController.lastPhotos = {};
     dashboardController.waitingForPhoto = {};
+    dashboardController.wasteClasses = [
+      {key: "GREEN", name: "Green"},
+      {key: "BLUE", name: "Blue"},
+      {key: "GRAY", name: "Gray"}
+    ];
 
     var lastRequestId = null;
 
@@ -28,6 +34,7 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
       socket.emit('request-picture', {}, function(requestId) {
         lastRequestId = requestId;
         dashboardController.lastPhotosUrls = {};
+        dashboardController.lastPhotos = {};
       });
     };
 
@@ -41,6 +48,7 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
         if (lastRequestId != requestId) {
           lastRequestId = requestId;
           dashboardController.lastPhotosUrls = {};
+          dashboardController.lastPhotos = {};
         }
       });
     };
@@ -80,6 +88,27 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
       });
     };
 
+    function initializeExample() {
+      dashboardController.example = {
+        product: '',
+        classification: '',
+        comments: ''
+      };
+    }
+
+    dashboardController.saveExample = function() {
+      var data = {
+        "images": dashboardController.lastPhotos,
+        "product": dashboardController.example.product,
+        "classification": dashboardController.example.classification,
+        "comments": dashboardController.example.comments
+      };
+
+      socket.emit('add-images', data, function() {
+        initializeExample();
+      });
+    };
+
     function updateDevices() {
       socket.emit('get-devices', '', function (devices) {
         var localDevices = {};
@@ -97,6 +126,8 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
         dashboardController.devices = localDevices;
       });
     }
+
+    initializeExample();
 
     $scope.$on('socket:error', function (ev, data) {
       console.log("Socket error.")
@@ -123,7 +154,8 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
 
     socket.on('picture-available', function(data) {
       if (data['request_id'] === lastRequestId) {
-        var imageBlob = new Blob([data['image']], {type: 'image/jpeg'})
+        var imageBlob = new Blob([data['image']], {type: 'image/jpeg'});
+        dashboardController.lastPhotos[data['client_id']] = data['image'];
         dashboardController.lastPhotosUrls[data['client_id']] = window.URL.createObjectURL(imageBlob);
         delete dashboardController.waitingForPhoto[data['client_id']];
       }

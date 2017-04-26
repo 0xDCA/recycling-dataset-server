@@ -19,7 +19,7 @@ devices = {}
 def set_up_database():
     with sqlite3.connect(DATABASE_FILE_NAME) as connection:
         connection.execute(
-            """CREATE TABLE IF NOT EXISTS samples (id ROWID, filename TEXT,
+            """CREATE TABLE IF NOT EXISTS samples (filename TEXT,
                 product TEXT, classification TEXT, comments TEXT, source_device TEXT)"""
         )
 
@@ -109,31 +109,29 @@ def on_picture_available(data):
 def on_add_images(data):
     """
     data: {
-        "images": [
-            binary
-        ],
+        "images": {
+            client_id: binary
+        },
         "product": string,
         "classification": "BLUE" | "GREEN" | "GRAY",
         "comments": string
     }
     """
 
-    client_id = request.sid
-
-    assert client_id in devices
-    source_device = devices[client_id]
-
     with sqlite3.connect(DATABASE_FILE_NAME) as connection:
-        for image in data['images']:
+        for client_id, image in data['images'].items():
             file_name = "%s.jpg" % (uuid.uuid4(),)
             file_path = os.path.join(DATASET_IMAGES_PATH, file_name)
 
             with open(file_path, 'wb') as f:
                 f.write(image)
 
+            assert client_id in devices
+            source_device = devices[client_id]
+
             connection.execute("""INSERT INTO samples (filename,
                 product, classification, comments, source_device) VALUES (?, ?, ?, ?, ?)""",
-                file_name,  data['product'], data['classification'], data['comments'], source_device)
+                (file_name,  data['product'], data['classification'], data['comments'], source_device))
 
         connection.commit()
 

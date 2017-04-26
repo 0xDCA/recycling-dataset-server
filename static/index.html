@@ -9,7 +9,7 @@
   <link rel="stylesheet" type="text/css" href="static/css/server.css">
 </head>
 <body ng-controller="DashboardController as dashboardController" layout="column">
-  <md-content layour="column">
+  <md-content layour="column" layout-padding>
     <h1 class="md-headline">Recycling Dataset Dashboard</h1>
 
     <div layout="row" layout-align="center center">
@@ -19,7 +19,7 @@
     </div>
 
     <div layout="row" layout-wrap layout-align="center center">
-      <p ng-if="!dashboardController.hasDevices()">No devices yet</p> 
+      <p ng-if="!dashboardController.hasDevices()">No devices yet</p>
       <md-card flex="auto" ng-repeat="(clientId, device) in dashboardController.devices"
         layout-align="start center">
         <md-card-title>
@@ -55,6 +55,35 @@
           </md-button>
         </md-card-actions>
       </md-card>
+    </div>
+
+    <div layout-wrap layout="column">
+      <form name="exampleForm" ng-submit="dashboardController.saveExample()">
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Product</label>
+          <input ng-model="dashboardController.example.product">
+        </md-input-container>
+
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Classification</label>
+          <md-select ng-model="dashboardController.example.classification">
+            <md-option ng-repeat="wasteClass in dashboardController.wasteClasses | orderBy: 'name'"
+              value="{{wasteClass.key}}">
+              {{wasteClass.name}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+
+        <md-input-container class="md-block">
+          <label>Comments</label>
+          <textarea ng-model="dashboardController.example.comments"
+            rows="5" md-select-on-focus></textarea>
+        </md-input-container>
+
+        <div layout="row" layout-align="center center">
+          <md-button type="submit">Submit</md-button>
+        </div>
+      </form>
     </div>
   </md-content>
 
