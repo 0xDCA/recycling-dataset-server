@@ -48,6 +48,11 @@
             ng-disabled="dashboardController.lastPhotosUrls[clientId] == null">
             Zoom
           </md-button>
+          <md-switch ng-model="device.flash" aria-label="Toggle flash"
+            ng-change="dashboardController.updateFlashState(device)"
+            ng-disabled="!device.connected">
+            Flash
+          </md-switch>
           <md-button
             ng-click="dashboardController.removeDevice(clientId)"
             ng-disabled="device.connected">

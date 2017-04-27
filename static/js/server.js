@@ -109,6 +109,13 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
       });
     };
 
+    dashboardController.updateFlashState = function(device) {
+      socket.emit('set-flash-state', {
+        "client_id": device.client_id,
+        "new_flash_state": device.flash
+      });
+    };
+
     function updateDevices() {
       socket.emit('get-devices', '', function (devices) {
         var localDevices = {};
@@ -119,7 +126,8 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
           localDevices[device.client_id] = {
             client_id: device.client_id,
             name: device.name,
-            connected: true
+            connected: true,
+            flash: false
           };
         }
 
@@ -144,7 +152,8 @@ angular.module('dashboardApp', ['ngMaterial', 'btford.socket-io'])
       dashboardController.devices[device.client_id] = {
         client_id: device.client_id,
         name: device.name,
-        connected: true
+        connected: true,
+        flash: false
       };
     });
 

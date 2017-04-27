@@ -73,6 +73,17 @@ def on_client_disconnect():
             "name": client_name
         }, room=DASHBOARDS_ROOM)
 
+@socketio.on('set-flash-state')
+def on_set_flash_state(data):
+    room = data.get('client_id', None)
+    new_flash_state = data['new_flash_state']
+    if room is None:
+        room = DEVICES_ROOM
+
+    socketio.emit('set-flash-state', {
+        "new_flash_state": new_flash_state
+    }, room=room)
+
 @socketio.on('request-picture')
 def on_request_picture(data):
     request_id = data.get('request_id', None)
